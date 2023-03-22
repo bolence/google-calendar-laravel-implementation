@@ -5316,18 +5316,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      name: null,
-      phone: null,
-      email: null,
-      time: null,
-      date: null,
-      errors: {}
+      event: {
+        name: null,
+        phone: null,
+        email: null,
+        time: null,
+        date: null
+      },
+      errors: {},
+      success_message: null,
+      error_message: null
     };
   },
   methods: {
     makeMeeting: function makeMeeting() {
       var _this = this;
-      axios.post("/api/meetings").then(function (resp) {})["catch"](function (error) {
+      axios.get("/api/events").then(function (resp) {
+        _this.success_message = resp.data.message;
+        _this.event = {};
+      })["catch"](function (error) {
         _this.errors = error.response.data.errors;
       });
     }
@@ -5353,13 +5360,29 @@ var render = function render() {
     _c = _vm._self._c;
   return _c("form", {
     staticClass: "p-5"
-  }, [_c("div", {
+  }, [_vm.success_message ? _c("div", {
+    staticClass: "alert alert-success",
+    attrs: {
+      role: "alert"
+    }
+  }, [_c("strong", [_vm._v(_vm._s(_vm.success_message))])]) : _vm._e(), _vm._v(" "), _vm.error_message ? _c("div", {
+    staticClass: "alert alert-danger",
+    attrs: {
+      role: "alert"
+    }
+  }, [_c("strong", [_vm._v(_vm._s(_vm.error_message))])]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "form-group mb-2"
   }, [_c("label", {
     attrs: {
       "for": "name"
     }
-  }, [_vm._v("Candidate full name")]), _vm._v(" "), _c("input", {
+  }, [_vm._v("Event name")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.event.name,
+      expression: "event.name"
+    }],
     staticClass: "form-control",
     "class": {
       "is-invalid": _vm.errors.name
@@ -5367,7 +5390,16 @@ var render = function render() {
     attrs: {
       type: "text",
       id: "name",
-      placeholder: "Enter candidate name"
+      placeholder: "Event name"
+    },
+    domProps: {
+      value: _vm.event.name
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.event, "name", $event.target.value);
+      }
     }
   }), _vm._v(" "), _vm.errors.name ? _c("small", {
     staticClass: "form-text text-danger"
@@ -5381,8 +5413,8 @@ var render = function render() {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.phone,
-      expression: "phone"
+      value: _vm.event.phone,
+      expression: "event.phone"
     }],
     staticClass: "form-control",
     "class": {
@@ -5394,12 +5426,12 @@ var render = function render() {
       placeholder: "Enter candidate phone"
     },
     domProps: {
-      value: _vm.phone
+      value: _vm.event.phone
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.phone = $event.target.value;
+        _vm.$set(_vm.event, "phone", $event.target.value);
       }
     }
   }), _vm._v(" "), _vm.errors.phone ? _c("small", {
@@ -5414,8 +5446,8 @@ var render = function render() {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.phone,
-      expression: "phone"
+      value: _vm.event.email,
+      expression: "event.email"
     }],
     staticClass: "form-control",
     "class": {
@@ -5427,12 +5459,12 @@ var render = function render() {
       placeholder: "Enter candidate email"
     },
     domProps: {
-      value: _vm.phone
+      value: _vm.event.email
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.phone = $event.target.value;
+        _vm.$set(_vm.event, "email", $event.target.value);
       }
     }
   }), _vm._v(" "), _vm.errors.email ? _c("small", {
@@ -5447,8 +5479,8 @@ var render = function render() {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.time,
-      expression: "time"
+      value: _vm.event.time,
+      expression: "event.time"
     }],
     staticClass: "form-control",
     "class": {
@@ -5460,12 +5492,12 @@ var render = function render() {
       placeholder: "Meeting time"
     },
     domProps: {
-      value: _vm.time
+      value: _vm.event.time
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.time = $event.target.value;
+        _vm.$set(_vm.event, "time", $event.target.value);
       }
     }
   }), _vm._v(" "), _vm.errors.time ? _c("small", {
@@ -5480,8 +5512,8 @@ var render = function render() {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.date,
-      expression: "date"
+      value: _vm.event.date,
+      expression: "event.date"
     }],
     staticClass: "form-control",
     "class": {
@@ -5493,12 +5525,12 @@ var render = function render() {
       placeholder: "Meeting date"
     },
     domProps: {
-      value: _vm.date
+      value: _vm.event.date
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.date = $event.target.value;
+        _vm.$set(_vm.event, "date", $event.target.value);
       }
     }
   }), _vm._v(" "), _vm.errors.date ? _c("small", {

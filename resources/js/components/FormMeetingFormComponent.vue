@@ -1,15 +1,22 @@
 <template>
     <form class="p-5">
+        <div class="alert alert-success" role="alert" v-if="success_message">
+            <strong>{{ success_message }}</strong>
+        </div>
+        <div class="alert alert-danger" role="alert" v-if="error_message">
+            <strong>{{ error_message }}</strong>
+        </div>
         <div class="form-group mb-2">
-            <label for="name">Candidate full name</label>
+            <label for="name">Event name</label>
             <input
                 type="text"
                 class="form-control"
                 id="name"
+                v-model="event.name"
                 :class="{
                     'is-invalid': errors.name,
                 }"
-                placeholder="Enter candidate name"
+                placeholder="Event name"
             />
             <small v-if="errors.name" class="form-text text-danger"
                 >{{ errors.name[0] }}
@@ -18,7 +25,7 @@
         <div class="form-group mb-2">
             <label for="phone">Candidate phone</label>
             <input
-                v-model="phone"
+                v-model="event.phone"
                 type="phone"
                 class="form-control"
                 :class="{
@@ -34,7 +41,7 @@
         <div class="form-group mb-2">
             <label for="email">Candidate email</label>
             <input
-                v-model="phone"
+                v-model="event.email"
                 type="email"
                 class="form-control"
                 :class="{
@@ -50,7 +57,7 @@
         <div class="form-group mb-2">
             <label for="time">Time</label>
             <input
-                v-model="time"
+                v-model="event.time"
                 type="text"
                 class="form-control"
                 :class="{
@@ -67,7 +74,7 @@
         <div class="form-group mb-2">
             <label for="date">Date</label>
             <input
-                v-model="date"
+                v-model="event.date"
                 type="text"
                 class="form-control"
                 :class="{
@@ -94,20 +101,28 @@
 export default {
     data() {
         return {
-            name: null,
-            phone: null,
-            email: null,
-            time: null,
-            date: null,
+            event: {
+                name: null,
+                phone: null,
+                email: null,
+                time: null,
+                date: null,
+            },
+
             errors: {},
+            success_message: null,
+            error_message: null,
         };
     },
 
     methods: {
         makeMeeting() {
             axios
-                .post("/api/meetings")
-                .then((resp) => {})
+                .get("/api/events")
+                .then((resp) => {
+                    this.success_message = resp.data.message;
+                    this.event = {};
+                })
                 .catch((error) => {
                     this.errors = error.response.data.errors;
                 });

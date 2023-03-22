@@ -4,10 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MeetingPostRequest;
+use App\Services\GoogleCalendar;
 use Illuminate\Http\Request;
 
-class ApiMeetingController extends Controller
+class ApiEventController extends Controller
 {
+
+    protected $googleCalendar;
+
+    public function __construct(GoogleCalendar $googleCalendar)
+    {
+        $this->googleCalendar = $googleCalendar;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +23,7 @@ class ApiMeetingController extends Controller
      */
     public function index()
     {
-        //
+        return $this->googleCalendar->getEvents();
     }
 
     /**
@@ -26,7 +34,7 @@ class ApiMeetingController extends Controller
      */
     public function store(MeetingPostRequest $request)
     {
-        //
+        return $this->googleCalendar->makeEvent($request);
     }
 
     /**
@@ -37,7 +45,7 @@ class ApiMeetingController extends Controller
      */
     public function show($id)
     {
-        //
+        return $this->googleCalendar->getEvent($id);
     }
 
     /**
@@ -49,7 +57,7 @@ class ApiMeetingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        return $this->googleCalendar->updateEvent($request, $id);
     }
 
     /**
@@ -60,6 +68,6 @@ class ApiMeetingController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return $this->googleCalendar->deleteEvent($id);
     }
 }
