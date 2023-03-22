@@ -14,11 +14,11 @@
                 id="name"
                 v-model="event.name"
                 :class="{
-                    'is-invalid': errors.name,
+                    'is-invalid': errors?.name,
                 }"
                 placeholder="Event name"
             />
-            <small v-if="errors.name" class="form-text text-danger"
+            <small v-if="errors?.name" class="form-text text-danger"
                 >{{ errors.name[0] }}
             </small>
         </div>
@@ -29,12 +29,12 @@
                 type="phone"
                 class="form-control"
                 :class="{
-                    'is-invalid': errors.phone,
+                    'is-invalid': errors?.phone,
                 }"
                 id="phone"
                 placeholder="Enter candidate phone"
             />
-            <small v-if="errors.phone" class="form-text text-danger"
+            <small v-if="errors?.phone" class="form-text text-danger"
                 >{{ errors.phone[0] }}
             </small>
         </div>
@@ -45,12 +45,12 @@
                 type="email"
                 class="form-control"
                 :class="{
-                    'is-invalid': errors.email,
+                    'is-invalid': errors?.email,
                 }"
                 id="email"
                 placeholder="Enter candidate email"
             />
-            <small v-if="errors.email" class="form-text text-danger"
+            <small v-if="errors?.email" class="form-text text-danger"
                 >{{ errors.email[0] }}
             </small>
         </div>
@@ -61,12 +61,12 @@
                 type="text"
                 class="form-control"
                 :class="{
-                    'is-invalid': errors.time,
+                    'is-invalid': errors?.time,
                 }"
                 id="time"
                 placeholder="Meeting time"
             />
-            <small v-if="errors.time" class="form-text text-danger"
+            <small v-if="errors?.time" class="form-text text-danger"
                 >{{ errors.time[0] }}
             </small>
         </div>
@@ -78,12 +78,12 @@
                 type="text"
                 class="form-control"
                 :class="{
-                    'is-invalid': errors.date,
+                    'is-invalid': errors?.date,
                 }"
                 id="date"
                 placeholder="Meeting date"
             />
-            <small v-if="errors.date" class="form-text text-danger"
+            <small v-if="errors?.date" class="form-text text-danger"
                 >{{ errors.date[0] }}
             </small>
         </div>
@@ -124,6 +124,7 @@ export default {
                     this.event = {};
                 })
                 .catch((error) => {
+                    this.error_message = error.response.data.message;
                     this.errors = error.response.data.errors;
                 });
         },

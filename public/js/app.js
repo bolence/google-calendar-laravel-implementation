@@ -5335,6 +5335,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.success_message = resp.data.message;
         _this.event = {};
       })["catch"](function (error) {
+        _this.error_message = error.response.data.message;
         _this.errors = error.response.data.errors;
       });
     }
@@ -5356,6 +5357,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
 /* harmony export */ });
 var render = function render() {
+  var _vm$errors, _vm$errors2, _vm$errors3, _vm$errors4, _vm$errors5, _vm$errors6, _vm$errors7, _vm$errors8, _vm$errors9, _vm$errors10;
   var _vm = this,
     _c = _vm._self._c;
   return _c("form", {
@@ -5385,7 +5387,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.errors.name
+      "is-invalid": (_vm$errors = _vm.errors) === null || _vm$errors === void 0 ? void 0 : _vm$errors.name
     },
     attrs: {
       type: "text",
@@ -5401,7 +5403,7 @@ var render = function render() {
         _vm.$set(_vm.event, "name", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.errors.name ? _c("small", {
+  }), _vm._v(" "), (_vm$errors2 = _vm.errors) !== null && _vm$errors2 !== void 0 && _vm$errors2.name ? _c("small", {
     staticClass: "form-text text-danger"
   }, [_vm._v(_vm._s(_vm.errors.name[0]) + "\n        ")]) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group mb-2"
@@ -5418,7 +5420,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.errors.phone
+      "is-invalid": (_vm$errors3 = _vm.errors) === null || _vm$errors3 === void 0 ? void 0 : _vm$errors3.phone
     },
     attrs: {
       type: "phone",
@@ -5434,7 +5436,7 @@ var render = function render() {
         _vm.$set(_vm.event, "phone", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.errors.phone ? _c("small", {
+  }), _vm._v(" "), (_vm$errors4 = _vm.errors) !== null && _vm$errors4 !== void 0 && _vm$errors4.phone ? _c("small", {
     staticClass: "form-text text-danger"
   }, [_vm._v(_vm._s(_vm.errors.phone[0]) + "\n        ")]) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group mb-2"
@@ -5451,7 +5453,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.errors.email
+      "is-invalid": (_vm$errors5 = _vm.errors) === null || _vm$errors5 === void 0 ? void 0 : _vm$errors5.email
     },
     attrs: {
       type: "email",
@@ -5467,7 +5469,7 @@ var render = function render() {
         _vm.$set(_vm.event, "email", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.errors.email ? _c("small", {
+  }), _vm._v(" "), (_vm$errors6 = _vm.errors) !== null && _vm$errors6 !== void 0 && _vm$errors6.email ? _c("small", {
     staticClass: "form-text text-danger"
   }, [_vm._v(_vm._s(_vm.errors.email[0]) + "\n        ")]) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group mb-2"
@@ -5484,7 +5486,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.errors.time
+      "is-invalid": (_vm$errors7 = _vm.errors) === null || _vm$errors7 === void 0 ? void 0 : _vm$errors7.time
     },
     attrs: {
       type: "text",
@@ -5500,7 +5502,7 @@ var render = function render() {
         _vm.$set(_vm.event, "time", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.errors.time ? _c("small", {
+  }), _vm._v(" "), (_vm$errors8 = _vm.errors) !== null && _vm$errors8 !== void 0 && _vm$errors8.time ? _c("small", {
     staticClass: "form-text text-danger"
   }, [_vm._v(_vm._s(_vm.errors.time[0]) + "\n        ")]) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group mb-2"
@@ -5517,7 +5519,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.errors.date
+      "is-invalid": (_vm$errors9 = _vm.errors) === null || _vm$errors9 === void 0 ? void 0 : _vm$errors9.date
     },
     attrs: {
       type: "text",
@@ -5533,7 +5535,7 @@ var render = function render() {
         _vm.$set(_vm.event, "date", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.errors.date ? _c("small", {
+  }), _vm._v(" "), (_vm$errors10 = _vm.errors) !== null && _vm$errors10 !== void 0 && _vm$errors10.date ? _c("small", {
     staticClass: "form-text text-danger"
   }, [_vm._v(_vm._s(_vm.errors.date[0]) + "\n        ")]) : _vm._e()]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary float-end",
