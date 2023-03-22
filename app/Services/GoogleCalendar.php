@@ -114,6 +114,6 @@ class GoogleCalendar implements CalendarInterface
      */
     private function log_exception(Throwable $th, string $message): void
     {
-        Log::exception($message . $th->getMessage() . ' on line ' . $th->getLine() . ' code ' . $th->getCode());
+        Log::error($message . $th->getMessage() . ' on line ' . $th->getLine() . ' code ' . $th->getCode());
     }
 }
