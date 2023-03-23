@@ -56,14 +56,13 @@
         </div>
         <div class="form-group mb-2">
             <label for="time">Time</label>
-            <input
+
+            <datePicker
                 v-model="event.time"
-                type="text"
-                class="form-control"
                 :class="{
                     'is-invalid': errors?.time,
                 }"
-                id="time"
+                :config="timeOptions"
                 placeholder="Meeting time"
             />
             <small v-if="errors?.time" class="form-text text-danger"
@@ -73,16 +72,15 @@
 
         <div class="form-group mb-2">
             <label for="date">Date</label>
-            <input
+            <datePicker
                 v-model="event.date"
-                type="text"
-                class="form-control"
                 :class="{
                     'is-invalid': errors?.date,
                 }"
-                id="date"
+                :config="dateOptions"
                 placeholder="Meeting date"
             />
+
             <small v-if="errors?.date" class="form-text text-danger"
                 >{{ errors.date[0] }}
             </small>
@@ -98,7 +96,12 @@
 </template>
 
 <script>
+import datePicker from "vue-bootstrap-datetimepicker";
+
 export default {
+    components: {
+        datePicker,
+    },
     data() {
         return {
             event: {
@@ -108,7 +111,14 @@ export default {
                 time: null,
                 date: null,
             },
-
+            timeOptions: {
+                format: "h:mm",
+                useCurrent: false,
+            },
+            dateOptions: {
+                format: "DD/MM/YYYY",
+                useCurrent: false,
+            },
             errors: {},
             success_message: null,
             error_message: null,
@@ -118,7 +128,7 @@ export default {
     methods: {
         makeMeeting() {
             axios
-                .get("/api/events")
+                .post("/api/events")
                 .then((resp) => {
                     this.success_message = resp.data.message;
                     this.event = {};
