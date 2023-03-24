@@ -11,7 +11,9 @@ use App\Interfaces\CalendarInterface;
 
 class GoogleCalendar implements CalendarInterface
 {
-
+    /**
+     * @var GoogleServiceCalendar
+     */
     protected $calendar;
 
     public function __construct()
@@ -64,7 +66,7 @@ class GoogleCalendar implements CalendarInterface
 
         try {
             $this->formatRequest($request);
-            $this->calendar->save('insertEvent');
+            $this->calendar->save();
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during saving an event');
             return response()->json(['message' => 'Error occured during saving an event'], 400);
@@ -83,7 +85,7 @@ class GoogleCalendar implements CalendarInterface
     public function updateEvent(Request $request, int $eventId): \Illuminate\Http\JsonResponse
     {
         try {
-            $this->calendar->update($request->all());
+            //.... code
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during updating event ' . $eventId);
         }
@@ -118,7 +120,7 @@ class GoogleCalendar implements CalendarInterface
     private function log_exception(Throwable $th, string $message): void
     {
         Log::info('Errors ' . json_encode($th->getMessage()));
-        Log::error($message . ' ' . $th->getMessage() . ' on line ' . $th->getLine() . ' code ' . $th->getCode());
+        Log::error($message . ' ' . $th->getMessage() . ' on line ' . $th->getLine() . ' with status code ' . $th->getCode() . ' in file ' . $th->getFile());
     }
 
     /**
@@ -133,7 +135,7 @@ class GoogleCalendar implements CalendarInterface
 
         $this->calendar->name = $request->name;
         $this->calendar->startDateTime = $startDateTime;
-        $this->calendar->endDateTime = $startDateTime->addHour();
+        $this->calendar->endDateTime = $startDateTime->addMinutes(30);
         $this->calendar->description = $request->note;
         $this->calendar->addAttendee(['email' => $request->email]);
 

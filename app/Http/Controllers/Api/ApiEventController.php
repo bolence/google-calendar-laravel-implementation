@@ -10,46 +10,49 @@ use Illuminate\Http\Request;
 class ApiEventController extends Controller
 {
 
-    protected $googleCalendar;
+    /**
+     * @var GoogleCalendar
+     */
+    protected $calendar;
 
-    public function __construct(GoogleCalendar $googleCalendar)
+    public function __construct(GoogleCalendar $calendar)
     {
-        $this->googleCalendar = $googleCalendar;
+        $this->calendar = $calendar;
     }
     /**
-     * Display a listing of the resource.
+     * Display all events in calendar
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return $this->googleCalendar->getEvents();
+        return $this->calendar->getEvents();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new event to calendar
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(MeetingPostRequest $request)
     {
-        return $this->googleCalendar->makeEvent($request);
+        return $this->calendar->makeEvent($request);
     }
 
     /**
-     * Display the specified resource.
+     * Display single event in calendar
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        return $this->googleCalendar->getEvent($id);
+        return $this->calendar->getEvent($id);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update event in calendar
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -57,17 +60,17 @@ class ApiEventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return $this->googleCalendar->updateEvent($request, $id);
+        return $this->calendar->updateEvent($request, $id);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete event in calendar
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        return $this->googleCalendar->deleteEvent($id);
+        return $this->calendar->deleteEvent($id);
     }
 }
