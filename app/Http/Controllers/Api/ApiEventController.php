@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MeetingPostRequest;
-use App\Services\GoogleCalendar;
+use App\Interfaces\CalendarInterface;
 use Illuminate\Http\Request;
 
 class ApiEventController extends Controller
 {
 
     /**
-     * @var GoogleCalendar
+     * @var CalendarInterface
      */
     protected $calendar;
 
-    public function __construct(GoogleCalendar $calendar)
+    public function __construct(CalendarInterface $calendar)
     {
         $this->calendar = $calendar;
     }
