@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use stdClass;
 use Throwable;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Spatie\GoogleCalendar\Event as GoogleServiceCalendar;
 use Illuminate\Support\Facades\Log;
 use App\Interfaces\CalendarInterface;
 
@@ -15,7 +16,7 @@ class GoogleCalendar implements CalendarInterface
 
     public function __construct()
     {
-        $this->calendar = new stdClass();
+        $this->calendar = new GoogleServiceCalendar;
     }
 
     /**
@@ -26,13 +27,13 @@ class GoogleCalendar implements CalendarInterface
     public function getEvents(): \Illuminate\Http\JsonResponse
     {
         try {
-            $this->calendar->getEventsFromGoogle();
+            $events = $this->calendar->get();
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during getting events');
             return response()->json(['message' => 'Error occured getting all events'], 400);
         }
 
-        return response()->json(['message' => 'Google calendar'], 200);
+        return response()->json(['events' => $events[0]], 200);
     }
 
     /**
@@ -44,12 +45,12 @@ class GoogleCalendar implements CalendarInterface
     public function getEvent(int $eventId): \Illuminate\Http\JsonResponse
     {
         try {
-            //code...
+            $event = $this->calendar->find($eventId);
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during getting event ' . $eventId);
         }
 
-        return response()->json(['message' => 'Get event'], 200);
+        return response()->json(['event' => $event], 200);
     }
 
     /**
@@ -61,13 +62,20 @@ class GoogleCalendar implements CalendarInterface
     public function makeEvent(Request $request): \Illuminate\Http\JsonResponse
     {
 
+        $startDateTime = Carbon::createFromTimestamp($request->date . $request->time);
+
         try {
-            //code...
+            $this->calendar->name = $request->name;
+            $this->calendar->startDateTime = $startDateTime;
+            $this->calendar->endDateTime = $startDateTime->addHour();
+            $this->calendar->addAttendee(['email' => $request->email]);
+            $this->calendar->save();
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during saving an event');
+            return response()->json(['message' => 'Error occured during saving an event'], 400);
         }
 
-        return response()->json(['message' => 'Store event'], 200);
+        return response()->json(['message' => 'Event created'], 200);
     }
 
     /**
@@ -97,7 +105,7 @@ class GoogleCalendar implements CalendarInterface
     public function deleteEvent(int $eventId): \Illuminate\Http\JsonResponse
     {
         try {
-            //code...
+            $this->calendar->delete($eventId);
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during deleting event ' . $eventId);
         }
@@ -114,6 +122,7 @@ class GoogleCalendar implements CalendarInterface
      */
     private function log_exception(Throwable $th, string $message): void
     {
-        Log::error($message . $th->getMessage() . ' on line ' . $th->getLine() . ' code ' . $th->getCode());
+        Log::info('Errors ' . json_encode($th->getMessage()));
+        Log::error($message . ' ' . $th->getMessage() . ' on line ' . $th->getLine() . ' code ' . $th->getCode());
     }
 }

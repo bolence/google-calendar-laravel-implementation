@@ -8,14 +8,14 @@ use Illuminate\Http\Request;
 interface CalendarInterface
 {
     /**
-     * Undocumented function
+     * Get calendar events
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function getEvents(): \Illuminate\Http\JsonResponse;
 
     /**
-     * Undocumented function
+     * Get calendar event
      *
      * @param integer $eventId
      * @return \Illuminate\Http\JsonResponse
@@ -23,7 +23,7 @@ interface CalendarInterface
     public function getEvent(int $eventId): \Illuminate\Http\JsonResponse;
 
     /**
-     * Undocumented function
+     * Make an calendar event
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -31,7 +31,7 @@ interface CalendarInterface
     public function makeEvent(Request $request): \Illuminate\Http\JsonResponse;
 
     /**
-     * Undocumented function
+     * Update an calendar event
      *
      * @param Request $request
      * @param integer $eventId
@@ -40,7 +40,7 @@ interface CalendarInterface
     public function updateEvent(Request $request, int $eventId): \Illuminate\Http\JsonResponse;
 
     /**
-     * Undocumented function
+     * Delete an calendar event
      *
      * @param integer $eventId
      * @return \Illuminate\Http\JsonResponse

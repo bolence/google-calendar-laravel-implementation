@@ -62,6 +62,7 @@
                 :class="{
                     'is-invalid': errors?.time,
                 }"
+                type="text"
                 :config="timeOptions"
                 placeholder="Meeting time"
             />
@@ -74,16 +75,29 @@
             <label for="date">Date</label>
             <datePicker
                 v-model="event.date"
+                type="text"
                 :class="{
                     'is-invalid': errors?.date,
                 }"
                 :config="dateOptions"
                 placeholder="Meeting date"
+                :min-date="new Date()"
             />
 
             <small v-if="errors?.date" class="form-text text-danger"
                 >{{ errors.date[0] }}
             </small>
+        </div>
+
+        <div class="form-group mb-2">
+            <label for="date">Note</label>
+            <textarea
+                class="form-control"
+                name="note"
+                id="note"
+                rows="3"
+                v-model="event.note"
+            ></textarea>
         </div>
 
         <button
@@ -97,6 +111,7 @@
 
 <script>
 import datePicker from "vue-bootstrap-datetimepicker";
+import moment from "moment";
 
 export default {
     components: {
@@ -110,14 +125,17 @@ export default {
                 email: null,
                 time: null,
                 date: null,
+                note: null,
             },
+            today: new Date(),
             timeOptions: {
-                format: "h:mm",
-                useCurrent: false,
+                format: "h:mm a",
+                stepping: 30,
             },
             dateOptions: {
                 format: "DD/MM/YYYY",
-                useCurrent: false,
+                useCurrent: true,
+                minDate: new Date(),
             },
             errors: {},
             success_message: null,
@@ -128,7 +146,7 @@ export default {
     methods: {
         makeMeeting() {
             axios
-                .post("/api/events")
+                .post("/api/events", this.event)
                 .then((resp) => {
                     this.success_message = resp.data.message;
                     this.event = {};

@@ -5315,6 +5315,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue_bootstrap_datetimepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-bootstrap-datetimepicker */ "./node_modules/vue-bootstrap-datetimepicker/dist/vue-bootstrap-datetimepicker.js");
 /* harmony import */ var vue_bootstrap_datetimepicker__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_bootstrap_datetimepicker__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5327,15 +5330,18 @@ __webpack_require__.r(__webpack_exports__);
         phone: null,
         email: null,
         time: null,
-        date: null
+        date: null,
+        note: null
       },
+      today: new Date(),
       timeOptions: {
-        format: "h:mm",
-        useCurrent: false
+        format: "h:mm a",
+        stepping: 30
       },
       dateOptions: {
         format: "DD/MM/YYYY",
-        useCurrent: false
+        useCurrent: true,
+        minDate: new Date()
       },
       errors: {},
       success_message: null,
@@ -5345,7 +5351,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     makeMeeting: function makeMeeting() {
       var _this = this;
-      axios.post("/api/events").then(function (resp) {
+      axios.post("/api/events", this.event).then(function (resp) {
         _this.success_message = resp.data.message;
         _this.event = {};
       })["catch"](function (error) {
@@ -5496,6 +5502,7 @@ var render = function render() {
       "is-invalid": (_vm$errors7 = _vm.errors) === null || _vm$errors7 === void 0 ? void 0 : _vm$errors7.time
     },
     attrs: {
+      type: "text",
       config: _vm.timeOptions,
       placeholder: "Meeting time"
     },
@@ -5519,8 +5526,10 @@ var render = function render() {
       "is-invalid": (_vm$errors9 = _vm.errors) === null || _vm$errors9 === void 0 ? void 0 : _vm$errors9.date
     },
     attrs: {
+      type: "text",
       config: _vm.dateOptions,
-      placeholder: "Meeting date"
+      placeholder: "Meeting date",
+      "min-date": new Date()
     },
     model: {
       value: _vm.event.date,
@@ -5531,7 +5540,35 @@ var render = function render() {
     }
   }), _vm._v(" "), (_vm$errors10 = _vm.errors) !== null && _vm$errors10 !== void 0 && _vm$errors10.date ? _c("small", {
     staticClass: "form-text text-danger"
-  }, [_vm._v(_vm._s(_vm.errors.date[0]) + "\n        ")]) : _vm._e()], 1), _vm._v(" "), _c("button", {
+  }, [_vm._v(_vm._s(_vm.errors.date[0]) + "\n        ")]) : _vm._e()], 1), _vm._v(" "), _c("div", {
+    staticClass: "form-group mb-2"
+  }, [_c("label", {
+    attrs: {
+      "for": "date"
+    }
+  }, [_vm._v("Note")]), _vm._v(" "), _c("textarea", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.event.note,
+      expression: "event.note"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      name: "note",
+      id: "note",
+      rows: "3"
+    },
+    domProps: {
+      value: _vm.event.note
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.event, "note", $event.target.value);
+      }
+    }
+  })]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary float-end",
     on: {
       click: function click($event) {

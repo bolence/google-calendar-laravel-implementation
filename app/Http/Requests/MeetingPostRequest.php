@@ -24,11 +24,11 @@ class MeetingPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|alpha|max:255',
+            'name' => 'required|max:255',
             'email' => 'required|email',
-            'phone' => 'required',
+            'phone' => 'required|numeric|min:10',
             'time' => 'required',
-            'date' => 'required|date',
+            'date' => 'required',
         ];
     }
 }
