@@ -62,14 +62,9 @@ class GoogleCalendar implements CalendarInterface
     public function makeEvent(Request $request): \Illuminate\Http\JsonResponse
     {
 
-        $startDateTime = Carbon::createFromTimestamp($request->date . $request->time);
-
         try {
-            $this->calendar->name = $request->name;
-            $this->calendar->startDateTime = $startDateTime;
-            $this->calendar->endDateTime = $startDateTime->addHour();
-            $this->calendar->addAttendee(['email' => $request->email]);
-            $this->calendar->save();
+            $this->formatRequest($request);
+            $this->calendar->save('insertEvent');
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during saving an event');
             return response()->json(['message' => 'Error occured during saving an event'], 400);
@@ -88,7 +83,7 @@ class GoogleCalendar implements CalendarInterface
     public function updateEvent(Request $request, int $eventId): \Illuminate\Http\JsonResponse
     {
         try {
-            //code...
+            $this->calendar->update($request->all());
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during updating event ' . $eventId);
         }
@@ -124,5 +119,24 @@ class GoogleCalendar implements CalendarInterface
     {
         Log::info('Errors ' . json_encode($th->getMessage()));
         Log::error($message . ' ' . $th->getMessage() . ' on line ' . $th->getLine() . ' code ' . $th->getCode());
+    }
+
+    /**
+     * Parse request from FE
+     *
+     * @param Request $request
+     * @return GoogleServiceCalendar $this
+     */
+    private function formatRequest(Request $request): GoogleServiceCalendar
+    {
+        $startDateTime = Carbon::createFromTimestamp($request->date . $request->time);
+
+        $this->calendar->name = $request->name;
+        $this->calendar->startDateTime = $startDateTime;
+        $this->calendar->endDateTime = $startDateTime->addHour();
+        $this->calendar->description = $request->note;
+        $this->calendar->addAttendee(['email' => $request->email]);
+
+        return $this->calendar;
     }
 }

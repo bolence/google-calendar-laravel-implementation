@@ -5351,9 +5351,11 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     makeMeeting: function makeMeeting() {
       var _this = this;
+      this.success_message = null;
+      this.error_message = null;
       axios.post("/api/events", this.event).then(function (resp) {
         _this.success_message = resp.data.message;
-        _this.event = {};
+        // this.event = {};
       })["catch"](function (error) {
         _this.error_message = error.response.data.message;
         _this.errors = error.response.data.errors;

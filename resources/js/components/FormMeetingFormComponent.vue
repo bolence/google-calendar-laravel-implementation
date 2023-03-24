@@ -145,11 +145,13 @@ export default {
 
     methods: {
         makeMeeting() {
+            this.success_message = null;
+            this.error_message = null;
             axios
                 .post("/api/events", this.event)
                 .then((resp) => {
                     this.success_message = resp.data.message;
-                    this.event = {};
+                    // this.event = {};
                 })
                 .catch((error) => {
                     this.error_message = error.response.data.message;
