@@ -5,7 +5,9 @@ namespace App\Services;
 use Throwable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Spatie\GoogleCalendar\Event as GoogleServiceCalendar;
+use Google\Client as Google_Client;
+use Google\Service\Calendar\Event as Google_Service_Calendar_Event;
+use Google\Service\Calendar as Google_Service_Calendar;
 use Illuminate\Support\Facades\Log;
 use App\Interfaces\CalendarInterface;
 
@@ -18,7 +20,7 @@ class GoogleCalendar implements CalendarInterface
 
     public function __construct()
     {
-        $this->calendar = new GoogleServiceCalendar;
+        // $this->calendar = new GoogleServiceCalendar;
     }
 
     /**
@@ -64,9 +66,33 @@ class GoogleCalendar implements CalendarInterface
     public function makeEvent(Request $request): \Illuminate\Http\JsonResponse
     {
 
+        $client = new Google_Client();
+        $client->setAuthConfig(storage_path('app/google-calendar/' . env('GOOGLE_CLIENT_SECRET_PATH')));
+        $client->setAccessType('offline');
+        $client->setAccessToken($request->session()->get('google_access_token'));
+        $service = new Google_Service_Calendar($client);
+
+        $event = new Google_Service_Calendar_Event([
+            'summary' => $request->input('name'),
+            'description' => $request->input('description'),
+            'start' => [
+                'dateTime' => $request->input('start_time'),
+                'timeZone' => 'America/Los_Angeles',
+            ],
+            'end' => [
+                'dateTime' => $request->input('end_time'),
+                'timeZone' => 'America/Los_Angeles',
+            ],
+            'attendees' => array(
+                array('email' => 'lpage@example.com'),
+                array('email' => 'sbrin@example.com'),
+            ),
+        ]);
+
+        $calendarId = 'calendar.gso@gmail.com';
+
         try {
-            $this->formatRequest($request);
-            $this->calendar->save();
+            $event = $service->events->insert($calendarId, $event);
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during saving an event');
             return response()->json(['message' => 'Error occured during saving an event'], 400);

@@ -35,7 +35,7 @@ class ApiEventController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(MeetingPostRequest $request)
+    public function store(Request $request)
     {
         return $this->calendar->makeEvent($request);
     }

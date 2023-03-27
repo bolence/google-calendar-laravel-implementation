@@ -148,7 +148,7 @@ export default {
             this.success_message = null;
             this.error_message = null;
             axios
-                .post("/api/events", this.event)
+                .get("/google/calendar/event", this.event)
                 .then((resp) => {
                     this.success_message = resp.data.message;
                     // this.event = {};
