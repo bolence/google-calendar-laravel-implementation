@@ -1,5 +1,12 @@
 <template>
-    <form class="p-5">
+<fragment>
+
+        <div class="float-end mt-3">
+            <a class="btn btn-primary" href="/google/auth/callback">
+                Login with Google
+            </a>
+        </div>
+    <form class="p-5 mt-5">
         <div class="alert alert-success" role="alert" v-if="success_message">
             <strong>{{ success_message }}</strong>
         </div>
@@ -104,14 +111,14 @@
             class="btn btn-primary float-end"
             @click.prevent="makeMeeting()"
         >
-            Submit
+            Create an event
         </button>
     </form>
+    </fragment>
 </template>
 
 <script>
 import datePicker from "vue-bootstrap-datetimepicker";
-import moment from "moment";
 
 export default {
     components: {
@@ -148,7 +155,7 @@ export default {
             this.success_message = null;
             this.error_message = null;
             axios
-                .get("/google/calendar/event", this.event)
+                .post("/google/calendar/event", this.event)
                 .then((resp) => {
                     this.success_message = resp.data.message;
                     // this.event = {};

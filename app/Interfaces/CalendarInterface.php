@@ -12,7 +12,7 @@ interface CalendarInterface
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getEvents(): \Illuminate\Http\JsonResponse;
+    // public function getEvents(): \Illuminate\Http\JsonResponse;
 
     /**
      * Get calendar event
@@ -20,7 +20,7 @@ interface CalendarInterface
      * @param integer $eventId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getEvent(int $eventId): \Illuminate\Http\JsonResponse;
+    // public function getEvent(int $eventId): \Illuminate\Http\JsonResponse;
 
     /**
      * Make an calendar event
@@ -37,7 +37,7 @@ interface CalendarInterface
      * @param integer $eventId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateEvent(Request $request, int $eventId): \Illuminate\Http\JsonResponse;
+    // public function updateEvent(Request $request, int $eventId): \Illuminate\Http\JsonResponse;
 
     /**
      * Delete an calendar event
@@ -45,5 +45,5 @@ interface CalendarInterface
      * @param integer $eventId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function deleteEvent(int $eventId): \Illuminate\Http\JsonResponse;
+    // public function deleteEvent(int $eventId): \Illuminate\Http\JsonResponse;
 }

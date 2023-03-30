@@ -6,55 +6,57 @@ use Throwable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Google\Client as Google_Client;
-use Google\Service\Calendar\Event as Google_Service_Calendar_Event;
-use Google\Service\Calendar as Google_Service_Calendar;
 use Illuminate\Support\Facades\Log;
 use App\Interfaces\CalendarInterface;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\EventCreatedNotification;
+use Google\Service\Calendar as Google_Service_Calendar;
+use Google\Service\Calendar\Event as Google_Service_Calendar_Event;
 
 class GoogleCalendar implements CalendarInterface
 {
-    /**
-     * @var GoogleServiceCalendar
-     */
-    protected $calendar;
+    /** @var GoogleClient */
+    protected $client;
+
+    const CALENDAR_ID="calendar.gso@gmail.com";
+    const SCOPES = Google_Service_Calendar::CALENDAR_EVENTS;
+    const ACCESS_TYPE = 'offline';
 
     public function __construct()
     {
-        // $this->calendar = new GoogleServiceCalendar;
+        $this->client = new Google_Client();
+        $this->client->setAuthConfig($this->authConfigJson());
+        $this->client->setRedirectUri(env('GOOGLE_REDIRECT_URI'));
+        $this->client->addScope(self::SCOPES);
+        $this->client->setAccessType(self::ACCESS_TYPE);
+        return $this->client;
     }
 
     /**
-     * Get all calendar events
+     * Get auth json config
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return string
      */
-    public function getEvents(): \Illuminate\Http\JsonResponse
+    private function authConfigJson()
     {
-        try {
-            $events = $this->calendar->get();
-        } catch (\Throwable $th) {
-            $this->log_exception($th, 'Error occured during getting events');
-            return response()->json(['message' => 'Error occured getting all events'], 400);
-        }
-
-        return response()->json(['events' => $events[0]], 200);
+        return storage_path('app/google-calendar/' . env('GOOGLE_CLIENT_SECRET_PATH'));
     }
 
     /**
-     * Get Google calendar event
+     * Auth with Google
      *
-     * @param integer $eventId
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return Redirect
      */
-    public function getEvent(int $eventId): \Illuminate\Http\JsonResponse
+    public function authWithGoogle(Request $request)
     {
-        try {
-            $event = $this->calendar->find($eventId);
-        } catch (\Throwable $th) {
-            $this->log_exception($th, 'Error occured during getting event ' . $eventId);
+        if ($request->has('code')) {
+            $this->client->fetchAccessTokenWithAuthCode($request->get('code'));
+            $request->session()->put('google_access_token', $this->client->getAccessToken());
+            return redirect('/');
+        } else {
+            return redirect($this->client->createAuthUrl());
         }
-
-        return response()->json(['event' => $event], 200);
     }
 
     /**
@@ -65,75 +67,23 @@ class GoogleCalendar implements CalendarInterface
      */
     public function makeEvent(Request $request): \Illuminate\Http\JsonResponse
     {
+        $this->client->setAccessToken($request->session()->get('google_access_token'));
 
-        $client = new Google_Client();
-        $client->setAuthConfig(storage_path('app/google-calendar/' . env('GOOGLE_CLIENT_SECRET_PATH')));
-        $client->setAccessType('offline');
-        $client->setAccessToken($request->session()->get('google_access_token'));
-        $service = new Google_Service_Calendar($client);
+        $service = new Google_Service_Calendar($this->client);
 
-        $event = new Google_Service_Calendar_Event([
-            'summary' => $request->input('name'),
-            'description' => $request->input('description'),
-            'start' => [
-                'dateTime' => $request->input('start_time'),
-                'timeZone' => 'America/Los_Angeles',
-            ],
-            'end' => [
-                'dateTime' => $request->input('end_time'),
-                'timeZone' => 'America/Los_Angeles',
-            ],
-            'attendees' => array(
-                array('email' => 'lpage@example.com'),
-                array('email' => 'sbrin@example.com'),
-            ),
-        ]);
-
-        $calendarId = 'calendar.gso@gmail.com';
+        $event = $this->formatRequestToEvent($request);
 
         try {
-            $event = $service->events->insert($calendarId, $event);
+            $event = $service->events->insert(self::CALENDAR_ID, $event);
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during saving an event');
             return response()->json(['message' => 'Error occured during saving an event'], 400);
         }
 
+        // this should be in queue implements interface ShouldQueue
+        Notification::send($request->email, new EventCreatedNotification($event));
+
         return response()->json(['message' => 'Event created'], 200);
-    }
-
-    /**
-     * Update event in Google calendar
-     *
-     * @param Request $request
-     * @param integer $eventId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function updateEvent(Request $request, int $eventId): \Illuminate\Http\JsonResponse
-    {
-        try {
-            //.... code
-        } catch (\Throwable $th) {
-            $this->log_exception($th, 'Error occured during updating event ' . $eventId);
-        }
-
-        return response()->json(['message' => 'Update event'], 200);
-    }
-
-    /**
-     * Delete event from Google calendar
-     *
-     * @param integer $eventId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function deleteEvent(int $eventId): \Illuminate\Http\JsonResponse
-    {
-        try {
-            $this->calendar->delete($eventId);
-        } catch (\Throwable $th) {
-            $this->log_exception($th, 'Error occured during deleting event ' . $eventId);
-        }
-
-        return response()->json(['message' => 'Delete event'], 200);
     }
 
     /**
@@ -150,21 +100,36 @@ class GoogleCalendar implements CalendarInterface
     }
 
     /**
-     * Parse request from FE
+     * Parse request from FE and create Google Service Calendar Event object
      *
      * @param Request $request
-     * @return GoogleServiceCalendar $this
+     * @return Google_Service_Calendar_Event
      */
-    private function formatRequest(Request $request): GoogleServiceCalendar
+    private function formatRequestToEvent(Request $request): Google_Service_Calendar_Event
     {
-        $startDateTime = Carbon::createFromTimestamp($request->date . $request->time);
 
-        $this->calendar->name = $request->name;
-        $this->calendar->startDateTime = $startDateTime;
-        $this->calendar->endDateTime = $startDateTime->addMinutes(30);
-        $this->calendar->description = $request->note;
-        $this->calendar->addAttendee(['email' => $request->email]);
+        $startDateTime = Carbon::parse($request->date . $request->time)->format(\DateTime::RFC3339);
+        $endDateTime = Carbon::parse($request->date . $request->time)->addMinutes(30)->format(\DateTime::RFC3339);
 
-        return $this->calendar;
+        $attende = ['email' => $request->email];
+
+        $event = new Google_Service_Calendar_Event(array(
+            'summary' => $request->name,
+            'description' => $request->note,
+            'start' => array(
+                'dateTime' => $startDateTime,
+                'timeZone' => 'Europe/Belgrade',
+            ),
+            'end' => array(
+                'dateTime' => $endDateTime,
+                'timeZone' => 'Europe/Belgrade',
+            ),
+            'colorId' => '11',
+            'sendUpdates' => true,
+            'attendees' => [$attende],
+            'attendeesOmitted' => true,
+        ));
+
+        return $event;
     }
 }
