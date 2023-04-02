@@ -18,7 +18,6 @@ class GoogleCalendar implements CalendarInterface
     /** @var GoogleClient */
     protected $client;
 
-    const CALENDAR_ID="calendar.gso@gmail.com";
     const SCOPES = Google_Service_Calendar::CALENDAR_EVENTS;
     const ACCESS_TYPE = 'offline';
 
@@ -74,7 +73,7 @@ class GoogleCalendar implements CalendarInterface
         $event = $this->formatRequestToEvent($request);
 
         try {
-            $event = $service->events->insert(self::CALENDAR_ID, $event);
+            $event = $service->events->insert(env('GOOGLE_FAKE_ACCOUNT'), $event);
         } catch (\Throwable $th) {
             $this->log_exception($th, 'Error occured during saving an event');
             return response()->json(['message' => 'Error occured during saving an event'], 400);
